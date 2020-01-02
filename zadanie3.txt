@@ -1,0 +1,24 @@
+1) Wybierz odpowiednią strategię migracji w oparciu o dostarczony opis.
+
+	- Najodpowiedniejsza metoda to Lift and Shift
+	
+2) W punktach napisz jak podszedłbyś do tej migracji, które kroki zrealizowałbyś w pierwszej kolejności
+
+	2.1) Przygotowanie obrazu środowiska on-prem
+	2.2) Utworzenie bucketu na obraz 
+	2.3) Upload obrazu do Cloud Storag
+	2.4) Dokonanie wyboru typu instancji
+	2.3) Utworzenie instancji Compute Engine na podstawie tego obrazu
+	
+3) Firma wymaga, abyś przygotował demo końcowej architektury i zaprezentował je podczas umówionego spotkania w siedzibie firmy.
+	- Tworzenie bucketu
+	gsutil mb -c standard -l europe-west3 gs://ernest-bucket-img-vm
+	- Import obrazu do compute engine
+	gcloud compute images import ernest-img-vm --os=debian-9 --source-file=gs://ernest-bucket-img-vm/mountkirk-games.vmdk
+	- Tworzenie instancji z zaimportowanego obrazu
+	gcloud compute instances create ernest-zad3-vm1 --zone=europe-west3-c --machine-type=f1-micro --image=ernest-img-vm --boot-disk-type=pd-standard --boot-disk-device-name=ernest-zad3-vm1
+	- zezwolenie na ruch http
+	-testy
+	
+	
+Aby zapewnić wysoką dostępność, proponuję utworzenie instances gorups w różnych strefach, dostęp do środowiska za pomocą Cloud Load Banancera. Pozwoli to na autoskalowanie oraz zapewni HA. Biorąc też pod uwagę możliwość awarii całego regionu, warto pomyśleć na utworzeniu środowiska redundantnego w innym regionie. Środowisko to mogłoby byś wygaszone, przeznaczone jako Disaster Recovery. Dobrym rozwiązaniem byłoby też wykorzystanie Cloud CDN i możliwość korzystania z obu regionów jednocześnie.
